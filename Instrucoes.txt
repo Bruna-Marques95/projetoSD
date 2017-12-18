@@ -1,0 +1,31 @@
+Fazer o download do eclipse neon:
+	http://www.eclipse.org/downloads/download.php?file=/technology/epp/downloads/release/neon/3/eclipse-jee-neon-3-win32-x86_64.zip
+
+Fazer o download do apache tomcat:
+	https://tomcat.apache.org/download-80.cgi#8.5.24
+	Selecionar a opcao: 
+		Binary Distributions:
+			Core:
+				http://mirrors.up.pt/pub/apache/tomcat/tomcat-8/v8.5.24/bin/apache-tomcat-8.5.24-windows-x64.zip (carregas no 64-bit Windows.zip, não nos pgp, md5, sha1 ou sha512)
+
+Faz também o download do jre1.8.0_102 (é este que eu tenho e o que tu queres, alguns se não forem uma versão específica não detetam Apache 8.5, Quando abrires o eclipse pela primeira vez, a jre que te mostra, se não for pode não aparecer o apache Tomcat v8.5)
+
+De seguida, fazes o download das fichas do professor:
+	No eclipse fazes:
+		File->Open Projects From File System->(Procuras o ficheiro das demos ficha structs2 e pões o diratorio do programa Hey)
+		De seguida, fazes o mesmo para o programa RMIServer
+
+Agora vais criar um servidor Apache Tomcat:
+	No que seria o terminal, ou consola, clicas na tab Servers e carregas na opção add new server (ou clique direito, new server)
+	Selecionas a pasta Apache:
+		Tomcat v8.5 Server, carregas em Next e fazes Add de Hey (e ele passa de Available para Configured)
+		Carrega em Finish
+Como instalaste a base de dados o porto 8080 (pré-definido do tomcat vai estar ocupado. Tens de o mudar. Na tab Servers, duplo clique em Tomcat v8.5, vai abrir uma janela com
+a inforação da configuração do Tomcat. Vais fazendo slide da janela para a direita e na Tabela Port Name: em HTTP/1.1 mudas o Port Number
+
+Agora, no Project Explorer, fazes clique direito em Hey e clicas Properties -> Target Runtimes -> Escolhes Apache Tomcat v8.5
+De seguida vais a: Preferences, General, Web Browser, e escolhes ”Use external web
+browser” (Chrome) [NOTA: Tens de ter o chrome como browser pre-definido, senão vais ter de abrir o browser e por o path do projeto a mao: http://localhost:9002/Hey/
+[NOTA: O porto é o teu do tomcat, da configuração, ou seja o Port Number de HTTP/1.1]
+Agora fazes run de RMIServer (as java Application)
+De seguida fazes run de Hey (as server)
