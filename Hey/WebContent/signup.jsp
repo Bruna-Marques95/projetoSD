@@ -17,6 +17,8 @@
 		<s:textfield name="password" /><br>
 		<s:text name="Telephone Number:" />
 		<s:textfield name="phonenumber" /><br>
+		<s:text name="Username:" />
+		<s:textfield name="username" /><br>
 		
 		
 		<s:submit />
