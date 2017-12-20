@@ -40,7 +40,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 	/**
 	 * returns true if and only if user matches password
 	 */
-	public boolean userMatchesPassword(String user, String password) throws RemoteException{
+	public boolean userMatchesPassword(String username, String password) throws RemoteException{
         String databaseAddress;
         try {
             databaseAddress = leFicheiroComEnderecoIP(nomeFicheiroComEnderecoIP);
@@ -59,7 +59,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             }
            
             if (connection != null) {
-                System.out.println("Ligação feita com sucessso");
+                System.out.println("Ligação feita com sucesso");
             } else {
                 System.out.println("Nao conseguimos estabelecer a ligacao");
             }
