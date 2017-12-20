@@ -41,6 +41,54 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 	 * returns true if and only if user matches password
 	 */
 	public boolean userMatchesPassword(String user, String password) throws RemoteException{
+        String databaseAddress;
+        try {
+            databaseAddress = leFicheiroComEnderecoIP(nomeFicheiroComEnderecoIP);
+            String firstPartOfDatabaseAddress ="jdbc:oracle:thin:@";
+            String lastPartOfDatabaseAddress =":1521:xe";
+            Connection connection = null;
+            
+            try {
+                connection = DriverManager.getConnection(firstPartOfDatabaseAddress+databaseAddress+lastPartOfDatabaseAddress,
+                        "utilizadorBD",
+                        "utilizadorBD");
+            } catch (SQLException e) {
+                System.out.println("A ligação falhou");
+                e.printStackTrace();
+                return false;
+            }
+           
+            if (connection != null) {
+                System.out.println("Ligação feita com sucessso");
+            } else {
+                System.out.println("Nao conseguimos estabelecer a ligacao");
+            }
+
+                //(NOME, NOMEUTILIZADOR,PASSWORD,NUMTELEFONE,MORADA, VALIDADECC,NUMCC,UNIDADEORGANICANOME,TIPO)
+                String query = "Select count(*) from PESSOA where NomeUtilizador = ? and Password = ?";
+
+
+                try (PreparedStatement ps= connection.prepareStatement(query)){
+                    ps.setString(1, username);
+                    ps.setString(2, password);
+
+                    ResultSet rs= ps.executeQuery();
+                    rs.next();
+                    return (rs.getInt(1)>=1);
+                  
+                   
+
+                }
+                catch (SQLException e){
+                    System.out.println(e);
+                    return false;
+                }
+            
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return false;
+        }
 		
 	}
 	
