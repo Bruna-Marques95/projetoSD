@@ -8,19 +8,12 @@
 <title>iVotas</title>
 </head>
 <body>
-	<s:form action="signup" method="post">
-		<s:text name="Full name:" />
-		<s:textfield name="name" /><br>
+	<h1>iVotas - Log In</h1>
+	<s:form action="login" method="post">
 		<s:text name="Username:" />
 		<s:textfield name="username" /><br>
 		<s:text name="Password:" />
 		<s:textfield name="password" /><br>
-		<s:text name="Telephone Number:" />
-		<s:textfield name="phonenumber" /><br>
-		<s:text name="Username:" />
-		<s:textfield name="username" /><br>
-		
-		
 		<s:submit />
 	</s:form>
 </body>

@@ -9,10 +9,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface {
 	private static final long serialVersionUID = 20141107L;
@@ -166,4 +169,160 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         
         return EnderecoIpNaRede;
 	}
+	
+	public boolean registarPessoa(String nomePessoa, String nomeUtilizador, String password, String numeroTelefone, String morada, String dataValidadeDoCC, String numeroCC, String unidadeOrganica,String funcaoPessoa, String permissao){
+
+        Connection connection = null;
+        try {
+
+            connection = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",
+                    "utilizadorBD",
+                    "utilizadorBD");
+        } catch (SQLException e) {
+            System.out.println("Ligacao falhou.. erro:");
+            e.printStackTrace();
+            return false;
+        }
+        if (connection != null) {
+            System.out.println("Ligação feita com sucessso");
+        } else {
+            System.out.println("Nao conseguimos estabelecer a ligacao");
+        }
+        if (!permissao.equals("0") && !permissao.equals("1")) {
+        	return false;
+			
+		}
+        if (!verificaIDCC(numeroCC)) {
+        	return false;
+		}
+        
+        if (!verificaIDCC(numeroTelefone)) {
+        	return false;
+		}
+        SimpleDateFormat form = new SimpleDateFormat("yyyy-MM-dd");
+        Date data1;
+		try {
+			data1 = (Date)form.parse(dataValidadeDoCC);
+			Calendar cal = Calendar.getInstance();
+	        cal.setTime(data1);
+	        if (!validaDatas(cal, Calendar.getInstance())) {
+	        	return false;
+			}
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		if (!verificaPermissao(permissao)) {
+			return false;
+		}
+       
+        
+
+            //(NOME, NOMEUTILIZADOR,PASSWORD,NUMTELEFONE,MORADA, VALIDADECC,NUMCC,UNIDADEORGANICANOME,TIPO,PERMISSAO)
+            String query = "INSERT into PESSOA"
+                    + " VALUES(?,?,?,?,?,TO_DATE(?,'DD-MM-YYYY'),?,(select nome from UNIDADEORGANICA where nome = ?),INITCAP(?),?)";
+
+
+
+            try (PreparedStatement ps= connection.prepareStatement(query)){
+                ps.setString(1, nomePessoa);
+                ps.setString(2, nomeUtilizador);
+                ps.setString(3, password);
+                ps.setInt(4, Integer.parseInt(numeroTelefone));
+                ps.setString(5, morada);
+                ps.setString(6, dataValidadeDoCC);
+                ps.setInt(7,Integer.parseInt(numeroCC));
+                ps.setString(8, unidadeOrganica);
+                ps.setString(9,funcaoPessoa);
+                ps.setInt(10,Integer.parseInt(permissao));
+
+
+                ps.executeUpdate();
+                connection.commit();
+                return true;
+
+            }
+            catch (SQLException e){
+                System.out.println(e);
+                return false;
+            }
+
+    }
+	
+	//Função utilizada para verificar a validade do código de um cartão de cidadão : Função reutilizada da meta 1 do projeto de SD
+    public static boolean verificaIDCC(String id){
+        try{
+            Integer.parseInt(id);
+            if(Integer.parseInt(id) >= 10000000 && Integer.parseInt(id) <= 99999999){
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        }catch(NumberFormatException e){
+            return false;
+        }
+    }
+    
+    public static boolean verificaTelefone(String numeroTel){
+        try{
+            Integer.parseInt(numeroTel);
+            if(Integer.parseInt(numeroTel) >= 100000000 && Integer.parseInt(numeroTel) <= 999999999){
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        }catch(NumberFormatException e){
+            return false;
+        }
+
+    }
+
+
+    public static boolean validaDatas(Calendar dI, Calendar dF) {
+        System.out.println("DATA dI-> "+dI.get(Calendar.DAY_OF_MONTH) + ":" + (dI.get(Calendar.MONTH)) + ":" + dI.get(Calendar.YEAR));
+        System.out.println("DATA dF-> "+dF.get(Calendar.DAY_OF_MONTH) + ":" + (dF.get(Calendar.MONTH)) + ":" + dF.get(Calendar.YEAR));
+        if(dI.YEAR >= dF.YEAR){
+            if(dI.YEAR == dF.YEAR){
+                if(dI.MONTH >= dF.MONTH){
+                    if(dI.MONTH == dF.MONTH){
+                        if(dI.get(Calendar.DAY_OF_MONTH) >= dF.get(Calendar.DAY_OF_MONTH)){
+                            System.out.println(dI.get(Calendar.DAY_OF_MONTH));
+                            if(dI.DAY_OF_MONTH == dF.DAY_OF_MONTH){
+                                return false;
+                            }
+                            else return false;
+                        }
+                        else return true;
+                    }
+                    else return false;
+                }
+                else return true;
+            }
+            else return false;
+        }
+        else return true;
+    }
+    
+    public static boolean verificaFuncao(String funcao){
+        if (funcao.equalsIgnoreCase("aluno") || funcao.equalsIgnoreCase("professor") || funcao.equalsIgnoreCase("funcionario")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    
+    public static boolean verificaPermissao(String permissao){
+        if (permissao.equalsIgnoreCase("0") || permissao.equalsIgnoreCase("1")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
