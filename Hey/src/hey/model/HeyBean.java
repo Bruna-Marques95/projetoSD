@@ -3,18 +3,22 @@
  */
 package hey.model;
 
+
 import java.util.ArrayList;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.io.Console;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import rmiserver.RMIServerInterface;
 
 public class HeyBean {
 	private RMIServerInterface server;
-	private String username; // username and password supplied by the user
-	private String password;
+	private String username=null; // username and password supplied by the user
+	private String password=null;
+	private String ccnumber=null;
+	private String permission=null; 
 
 	public HeyBean() {
 		try {
@@ -43,19 +47,67 @@ public class HeyBean {
 		this.password = password;
 	}
 	
-	public boolean signup(String nomePessoa, String nomeUtilizador, String password, String numeroTelefone, String morada, String dataValidadeDoCC, String numeroCC, String unidadeOrganica,String funcaoPessoa, String permissao){
-		try{
-			if(server.registarPessoa(nomePessoa, nomeUtilizador, password, numeroTelefone, morada, dataValidadeDoCC, numeroCC, unidadeOrganica, funcaoPessoa, permissao)){
-				return true;
-			}
-			else{
-				return false;
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public boolean getRegistarPessoa(String name, String username, String password, String phonenumber, String address, String expiracyday, String expiracymonth, String expiracyyear, String ccnumber, String organicunit, String occupation, String permisssion) throws RemoteException{
+		String expiracydate=expiracyday+"-"+expiracymonth+"-"+expiracyyear;
+		boolean sucesso;
+		sucesso=server.registerPerson(name, username, password, phonenumber, address, expiracydate, ccnumber, organicunit, occupation, permisssion);
+		return sucesso;
+			
 	}
+	
+	public boolean getGerirDepFac(String operation, String typeofbuilding, String nameofbuilding, String newnameofbuilding) throws FileNotFoundException, IOException{
+		boolean sucesso;
+		System.out.println("CHEGOU AO BEAN");
+		sucesso=server.manageDepFac(operation, typeofbuilding ,nameofbuilding, newnameofbuilding);
+		return sucesso;
+			
+	}
+	
+	
+	
+	public int getCcnumbers(String username, String password) throws FileNotFoundException, IOException{
+		int ccnumber;
+		ccnumber=server.getCcnumber(username, password);
+		return ccnumber;
+	}
+	
+	public int getPermissions(String username, String password) throws FileNotFoundException, IOException{
+		int permissions;
+		permissions=server.getPermission(username, password);
+		return permissions;
+		
+		
+	}
+
+	/**
+	 * @return the ccnumber
+	 */
+	public String getCcnumber() {
+		return ccnumber;
+	}
+
+	/**
+	 * @param ccnumber the ccnumber to set
+	 */
+	public void setCcnumber(String ccnumber) {
+		this.ccnumber = ccnumber;
+	}
+
+	/**
+	 * @return the permission
+	 */
+	public String getPermission() {
+		return permission;
+	}
+
+	/**
+	 * @param permission the permission to set
+	 */
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+		
+
 	
 	
 	

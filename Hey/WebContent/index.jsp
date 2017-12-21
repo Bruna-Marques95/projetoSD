@@ -8,30 +8,16 @@
 <title>iVotas - Log In</title>
 </head>
 <body>
-	<h1>iVotas - Sign up</h1>
-	<s:form action="signup" method="post">
-		<s:text name="Full name:" />
-		<s:textfield name="name" /><br>
+	<h1>iVotas - Log In</h1>
+	<s:form action="login" method="post">
 		<s:text name="Username:" />
 		<s:textfield name="username" /><br>
 		<s:text name="Password:" />
 		<s:textfield name="password" /><br>
-		<s:text name="Telephone Number:" />
-		<s:textfield name="phonenumber" /><br>
-		<s:text name="Address:" />
-		<s:textfield name="address" /><br>
-		<s:text name="Date of expiration:" />
-		<s:textfield name="expiracydate" /><br>
-		<s:text name="Citizen card number(8digits):" />
-		<s:textfield name="ccnumber" /><br>
-		<s:text name="Organic unit:" />
-		<s:textfield name="organicunit" /><br>
-		<s:text name="Occupation:" />
-		<s:textfield name="occupation" /><br>
-		<s:text name="Permission(0-user,1-admin):" />
-		<s:textfield name="permission" /><br>
 		<s:submit />
 	</s:form>
+	<a href="signup.jsp"> >Click here to register</a>
+	<!--<p><a href="<s:url action="signup" />">Click here to register</a></p>-->
 </body>
 </html>
  

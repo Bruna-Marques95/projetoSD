@@ -23,7 +23,7 @@
 		<c:out value="${value}" /><br>
 	</c:forEach>
 
-	<p><a href="<s:url action="index" />">Click here to logout</a></p>
+	<p><a href="<s:url action="logout" />">Click here to logout</a></p>
 
 </body>
 </html>
