@@ -28,19 +28,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		users.put("homer",  "simpson");
 	}
 	
-	//Comentar este método e substituir por outro que aceda a base de dados
 	/**
 	 * returns true if and only if user matches password
 	 */
-	/*public boolean userMatchesPassword(String user, String password) throws RemoteException {
-		System.out.println("Looking up " + user + "...");
-		return users.containsKey(user) && users.get(user).equals(password);
-	}*/
-	
-	/**
-	 * returns true if and only if user matches password
-	 */
-	public boolean userMatchesPassword(String username, String password) throws RemoteException{
+	public boolean userMatchesPassword(String username, String password) throws RemoteException {
         String databaseAddress;
         try {
             databaseAddress = leFicheiroComEnderecoIP(nomeFicheiroComEnderecoIP);
@@ -61,25 +52,19 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if (connection != null) {
                 System.out.println("Ligação feita com sucesso");
             } else {
-                System.out.println("Nao conseguimos estabelecer a ligacao");
+                System.out.println("Não conseguimos estabelecer a ligação");
             }
-
-                //(NOME, NOMEUTILIZADOR,PASSWORD,NUMTELEFONE,MORADA, VALIDADECC,NUMCC,UNIDADEORGANICANOME,TIPO)
+                //(NOME,NOMEUTILIZADOR,PASSWORD,NUMTELEFONE,MORADA,VALIDADECC,NUMCC,UNIDADEORGANICANOME,TIPO)
                 String query = "Select count(*) from PESSOA where NomeUtilizador = ? and Password = ?";
 
-
-                try (PreparedStatement ps= connection.prepareStatement(query)){
+                try (PreparedStatement ps = connection.prepareStatement(query)) {
                     ps.setString(1, username);
                     ps.setString(2, password);
 
-                    ResultSet rs= ps.executeQuery();
+                    ResultSet rs = ps.executeQuery();
                     rs.next();
-                    return (rs.getInt(1)>=1);
-                  
-                   
-
-                }
-                catch (SQLException e){
+                    return (rs.getInt(1) >= 1);
+                } catch (SQLException e) {
                     System.out.println(e);
                     return false;
                 }
@@ -89,7 +74,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             e1.printStackTrace();
             return false;
         }
-		
 	}
 	
 	/**
@@ -108,16 +92,14 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String firstPartOfDatabaseAddress ="jdbc:oracle:thin:@";
         String lastPartOfDatabaseAddress =":1521:xe";
 		
-		
-		try{
+		try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
-        }catch(ClassNotFoundException e){
+        } catch(ClassNotFoundException e) {
             System.out.println("O driver não foi encontrado, verificar se este existe.");
             e.printStackTrace();
-
         }
-        System.out.println("O JDBC Driver funciona ... a tentar efectuar uma ligacao");
+        System.out.println("O JDBC Driver funciona ... a tentar efectuar uma ligação");
         Connection conexao = null;
         try {
             conexao = DriverManager.getConnection(firstPartOfDatabaseAddress+databaseAddress+lastPartOfDatabaseAddress,
@@ -129,21 +111,21 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             return;
         }
 
-        if (conexao!=null){
+        if (conexao != null) {
             System.out.println("A ligação à base de dados foi efectuada com sucesso");
         }
-        else{
+        else {
             System.out.println("Não foi possível estabelecer ligação com a base de dados");
         }
 
-        try{
+        try {
             Statement stmt;
             if (conexao.createStatement() == null){
                 conexao = DriverManager.getConnection(firstPartOfDatabaseAddress+databaseAddress+lastPartOfDatabaseAddress,
                         "utilizadorBD",
                         "utilizadorBD");
             }
-            if ((stmt = conexao.createStatement()) == null){
+            if ((stmt = conexao.createStatement()) == null) {
                 System.out.println("Não foi possível criar um statement");
                 System.exit(-1);
             }
@@ -155,10 +137,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             ResultSetMetaData rsmd = resultado.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
 
-            for(int i = 1 ; i <= columnsNumber ; i++){
+            for(int i = 1 ; i <= columnsNumber ; i++) {
                 System.out.print(rsmd.getColumnName(i) +", ");
             }
-            System.out.println("");//Quando chegamos ao fim da linha com os cabeçalhos da tabela, saltamos uma linha
+            System.out.println(""); //Quando chegamos ao fim da linha com os cabeçalhos da tabela, saltamos uma linha
 
             while (resultado.next()) {
                 // Listar o resultado da query
@@ -168,23 +150,20 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     String columnValue = resultado.getString(i);
                     System.out.print(columnValue);
                 }
-                System.out.println("");//Permite mostrar as linhas da tabela corretamente - Separa as linhas da tabela
+                System.out.println(""); //Permite mostrar as linhas da tabela corretamente - Separa as linhas da tabela
             }
 
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 		
 	}
-	public static String leFicheiroComEnderecoIP(String nomeFicheiro) throws FileNotFoundException,IOException {
+	public static String leFicheiroComEnderecoIP(String nomeFicheiro) throws FileNotFoundException, IOException {
 		BufferedReader fich = new BufferedReader(new FileReader(nomeFicheiro));
 
         //Lê o ficheiro que contem o endereco IP na rede(Necessario alterar antes de correr o programa)
-        String EnderecoIpNaRede= fich.readLine();
+        String EnderecoIpNaRede = fich.readLine();
         
         return EnderecoIpNaRede;
-		
-		
-		
 	}
 }
