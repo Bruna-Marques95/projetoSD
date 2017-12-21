@@ -35,7 +35,10 @@ insert into Faculdade
 
 /*Inserir em DEPARTAMENTO:*/
 insert into DEPARTAMENTO
-    values('DEI',(select nome from FACULDADE where nome = 'FCTUC'), (select nome from UNIDADEORGANICA where nome= 'FCTUC'));
+    values('DEI',(select nome from FACULDADE where nome = 'FCTUC'), (select nome from UNIDADEORGANICA where nome= 'DEI'));
+    
+insert into DEPARTAMENTO
+    values('DEM',(select nome from FACULDADE where nome = 'FCTUC'), (select nome from UNIDADEORGANICA where nome= 'DEM'));
 
 /*Inserir em NUCLEOESTUDANTES*/
 insert into NUCLEOESTUDANTES
@@ -66,7 +69,7 @@ insert into ELEICAO
     values('Eleicao de Nucleo do DEI', 'Uma pequena eleicao 1', TO_TIMESTAMP('2017-12-20 10:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-23 18:30:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Nucleo', seq_ELEICAO.nextval , (select nome from UNIDADEORGANICA where nome = 'DEI'));
 
 insert into ELEICAO
-    values('Eleicao de CG', 'Uma pequena eleicao 2', TO_TIMESTAMP('2017-12-20 11:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-21 18:30:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Conselho Geral', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'FCTUC'));
+    values('Eleicao de CG', 'Uma pequena eleicao 2', TO_TIMESTAMP('2017-12-20 11:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-21 19:15:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Conselho Geral', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'FCTUC'));
 
 insert into ELEICAO
     values('Eleicao de Direcao de Departamento', 'Uma pequena eleicao 3', TO_TIMESTAMP('2017-12-20 09:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-23 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Direcao Departamento', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'DEI'));
