@@ -1,0 +1,147 @@
+/*Inserir em UNIDADE ORGANICA: nome*/
+insert into UNIDADEORGANICA
+    values('FCTUC');
+
+insert into UNIDADEORGANICA
+    values('DEI');
+
+insert into UNIDADEORGANICA
+    values('FCDEFUC');
+
+insert into UNIDADEORGANICA
+    values('FDUC');
+
+insert into UNIDADEORGANICA
+    values('FMUC');
+
+insert into UNIDADEORGANICA
+    values('FLUC');
+
+insert into UNIDADEORGANICA
+    values('UC');
+    
+insert into UNIDADEORGANICA
+    values('DEEC');
+    
+insert into UNIDADEORGANICA
+    values('DEM');
+    
+/*Inserir em FACULDADE:*/
+insert into Faculdade
+  values('FCTUC', (select nome from UNIDADEORGANICA where nome = 'FCTUC'));
+
+insert into Faculdade
+  values('FMUC', (select nome from UNIDADEORGANICA where nome = 'FMUC'));
+
+/*Inserir em DEPARTAMENTO:*/
+insert into DEPARTAMENTO
+    values('DEI',(select nome from FACULDADE where nome = 'FCTUC'), (select nome from UNIDADEORGANICA where nome= 'FCTUC'));
+
+/*Inserir em NUCLEOESTUDANTES*/
+insert into NUCLEOESTUDANTES
+    values((select nome from faculdade where nome='FCTUC'), 'NEI', (select nome from departamento where nome = 'DEI'));
+
+insert into NUCLEOESTUDANTES
+    values((select nome from faculdade where nome='FMUC'), 'NEMD', null);
+
+/*Inserir em PESSOA
+Argumentos: NOME, NOMEUTILIZADOR, PASSWORD, NUMTELEFONE, MORADA, VALIDADECC, NUMCC, UNIDADEORGANICANOME, TIPO*/
+insert into PESSOA
+    values('Maria Pedroso', 'mfp', 'mfp', 987654321,'Ribas', TO_DATE('20-2-2018','DD-MM-YYYY'), 12345678,(select nome from unidadeorganica where nome = 'DEI'), 'aluno',1);
+
+insert into PESSOA
+    values('Bruna Marques', 'barm', 'barm', 876543219, 'Coimbra', to_date('21-2-2018','DD-MM-YYYY'), 23456789,(select nome from unidadeorganica where nome = 'FCTUC'), 'aluno',1);
+    
+insert into PESSOA
+    values('Roberto Carlos', 'robcar', 'robcar', 765432198, 'Coimbra', to_date('22-2-2018','DD-MM-YYYY'), 34567891,(select nome from unidadeorganica where nome = 'FCTUC'), 'professor',0);
+
+insert into PESSOA
+    values('Carlos Alves', 'caralv', 'caralv', 654321987, 'Miranda do Corvo', to_date('23-2-2018','DD-MM-YYYY'), 45678912,(select nome from unidadeorganica where nome = 'FCTUC'), 'funcionario',0);
+
+insert into PESSOA
+    values('Tiago Gomes', 'tigo', 'tigo', 543219876, 'Coimbra', to_date('24-2-2018','DD-MM-YYYY'), 56789123,(select nome from unidadeorganica where nome = 'DEI'), 'professor',0);
+
+/*Inserir em ELEICAO: título, descrição, data início, data fim, votos nulos, votos em branco, abstenções, tipo, id, UO nome*/
+insert into ELEICAO
+    values('Eleicao de Nucleo do DEI', 'Uma pequena eleicao 1', TO_TIMESTAMP('2017-12-20 10:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-23 18:30:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Nucleo', seq_ELEICAO.nextval , (select nome from UNIDADEORGANICA where nome = 'DEI'));
+
+insert into ELEICAO
+    values('Eleicao de CG', 'Uma pequena eleicao 2', TO_TIMESTAMP('2017-12-20 11:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-21 18:30:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Conselho Geral', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'FCTUC'));
+
+insert into ELEICAO
+    values('Eleicao de Direcao de Departamento', 'Uma pequena eleicao 3', TO_TIMESTAMP('2017-12-20 09:30:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-23 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Direcao Departamento', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'DEI'));
+
+insert into ELEICAO
+    values('Eleicao de Direcao de Faculdade', 'Uma pequena eleicao 4', TO_TIMESTAMP('2017-12-20 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP('2017-12-23 17:30:00', 'YYYY-MM-DD HH24:MI:SS'), 0, 0, 0, 'Direcao Faculdade', seq_ELEICAO.nextval, (select nome from UNIDADEORGANICA where nome = 'FCTUC'));
+
+/*Inserir em LISTA: nº votos, nome lista, id eleição, tipo lista*/
+insert into LISTA
+    values(0, 'Lista A', (select id from ELEICAO where id = 1), 'Aluno');
+
+insert into LISTA
+    values(0, 'Lista B', (select id from ELEICAO where id = 1), 'Aluno');
+    
+insert into LISTA
+    values(0, 'Lista C', (select id from ELEICAO where id = 2), 'Aluno');
+    
+insert into LISTA
+    values(0, 'Lista D', (select id from ELEICAO where id = 2), 'Professor');
+    
+insert into LISTA
+    values(0, 'Lista E', (select id from ELEICAO where id = 3), 'Professor');
+    
+insert into LISTA
+    values(0, 'Lista F', (select id from ELEICAO where id = 4), 'Professor');
+    
+/*Inserir em MESA_VOTO: UO nome, id*/
+insert into MESA_VOTO
+    values((select nome from UNIDADEORGANICA where nome = 'DEI'), seq_MESA_VOTO.nextval);
+
+insert into MESA_VOTO
+    values((select nome from UNIDADEORGANICA where nome = 'DEI'), seq_MESA_VOTO.nextval);
+    
+insert into MESA_VOTO
+    values((select nome from UNIDADEORGANICA where nome = 'DEI'), seq_MESA_VOTO.nextval);
+
+insert into MESA_VOTO
+    values((select nome from UNIDADEORGANICA where nome = 'DEI'), seq_MESA_VOTO.nextval);
+    
+insert into MESA_VOTO
+    values((select nome from UNIDADEORGANICA where nome = 'DEI'), seq_MESA_VOTO.nextval);
+    
+/*Inserir em MESA_VOTO_ELEICAO: Mesa_Voto UO nome, Mesa_Voto id, Eleicao id*/
+insert into MESA_VOTO_ELEICAO
+    values((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = 'DEI') and id = 1), (select id from MESA_VOTO where id = 1), (select id from ELEICAO where id = 1));
+    
+insert into MESA_VOTO_ELEICAO
+    values((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = 'DEI') and id = 2), (select id from MESA_VOTO where id = 2), (select id from ELEICAO where id = 2));
+
+insert into MESA_VOTO_ELEICAO
+    values((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = 'DEI') and id = 3), (select id from MESA_VOTO where id = 3), (select id from ELEICAO where id = 3));
+    
+insert into MESA_VOTO_ELEICAO
+    values((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = 'DEI') and id = 4), (select id from MESA_VOTO where id = 4), (select id from ELEICAO where id = 4));
+
+insert into BROWSERVOTO
+    values(seq_BROWSERVOTO.nextval);
+
+insert into BROWSERVOTO
+    values(seq_BROWSERVOTO.nextval);
+    
+insert into BROWSERVOTO
+    values(seq_BROWSERVOTO.nextval);
+
+insert into BROWSERVOTO
+    values(seq_BROWSERVOTO.nextval);
+    
+insert into BROWSERVOTO_ELEICAO
+    values((select id from BROWSERVOTO where id = 1), (select id from ELEICAO where id = 1));
+    
+insert into BROWSERVOTO_ELEICAO
+    values((select id from BROWSERVOTO where id = 2), (select id from ELEICAO where id = 2));
+
+insert into BROWSERVOTO_ELEICAO
+    values((select id from BROWSERVOTO where id = 3), (select id from ELEICAO where id = 3));
+    
+insert into BROWSERVOTO_ELEICAO
+    values((select id from BROWSERVOTO where id = 4), (select id from ELEICAO where id = 4));
