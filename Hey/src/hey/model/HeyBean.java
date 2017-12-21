@@ -43,6 +43,20 @@ public class HeyBean {
 		this.password = password;
 	}
 	
+	public boolean signup(String nomePessoa, String nomeUtilizador, String password, String numeroTelefone, String morada, String dataValidadeDoCC, String numeroCC, String unidadeOrganica,String funcaoPessoa, String permissao){
+		try{
+			if(server.registarPessoa(nomePessoa, nomeUtilizador, password, numeroTelefone, morada, dataValidadeDoCC, numeroCC, unidadeOrganica, funcaoPessoa, permissao)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	
 	
 }
