@@ -72,8 +72,18 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     </action>
     
     <action name="createelection" class="hey.action.CreateElectionAction" method="execute">
-    	<result name="sucess">/console.jsp</result>
+    	<result name="success">/console.jsp</result>
     	<result name="error">/console.jsp</result>
+    </action>
+    
+    <action name="managevotingtable" class="hey.action.ManageVotingTableAction" method="execute">
+    	<result name="success">/console.jsp</result>
+    	<result name="error">/erroradmin.jsp</result>
+    </action>
+    
+    <action name="editelection" class="hey.action.EditElectionAction" method="execute">
+    	<result name="success">/console.jsp</result>
+    	<result name="error">/erroradmin.jsp</result>
     </action>
 
   </package>

@@ -87,6 +87,20 @@ public class HeyBean {
 		
 	}
 	
+	public boolean getGerirMesas(String operationoftable, String electionid, String tableid) throws FileNotFoundException, IOException{
+		boolean sucesso;
+		sucesso=server.manageTables(operationoftable, electionid, tableid);
+		return sucesso;
+		
+	}
+	
+	public boolean getEditarEleicao(String opedit, String newarg1, String newarg2, String idelec) throws FileNotFoundException, SQLException, IOException{
+		boolean sucesso;
+		sucesso=server.editElection(opedit, newarg1, newarg2, idelec);
+		return sucesso;
+		
+	}
+	
 	
 	
 	public int getCcnumbers(String username, String password) throws FileNotFoundException, IOException{

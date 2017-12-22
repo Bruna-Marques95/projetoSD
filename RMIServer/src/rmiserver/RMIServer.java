@@ -89,6 +89,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return connection;
     }
 	
+	
+	
+	
 	//Auxiliary method to help remove all information about lists from database
 	public int verificaSeExisteChavePessoaLista(String valorParam) throws FileNotFoundException, IOException{      
 		Connection connectionToDB = null;
@@ -106,6 +109,40 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 	    }
 
 	 }
+	
+	public String devolveUnidadeOrganicaDeMesa(int idMesa) throws FileNotFoundException, IOException{
+		Connection connectionToDB = null;
+		connectionToDB = connectToDB();
+	    String query = "Select UONOME from MESA_VOTO WHERE ID = ? ";
+	    try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+	    	ps.setInt(1, idMesa);
+	        ResultSet rs= ps.executeQuery();
+	        rs.next();
+	        return rs.getString(1);
+	    }
+	    catch (SQLException e){
+	    	System.out.println(e);
+	        return "";
+	    }
+		
+	}
+	
+	public String devolveUnidadeOrganicaDeEleicao(int idEleicao) throws FileNotFoundException, IOException{
+		Connection connectionToDB = null;
+		connectionToDB = connectToDB();
+	    String query = "Select UNIDADEORGANICANOME from ELEICAO WHERE ID = ? ";
+	    try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+	    	ps.setInt(1, idEleicao);
+	        ResultSet rs= ps.executeQuery();
+	        rs.next();
+	        return rs.getString(1);
+	    }
+	    catch (SQLException e){
+	    	System.out.println(e);
+	        return "";
+	    }
+		
+	}
 	
 	
 	
@@ -329,6 +366,31 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return "";
 
     }
+    
+    public String devolveUOporChave(int idMesa) throws FileNotFoundException, IOException{
+        Connection connection=null;
+        connection=connectToDB();
+
+        String query = "Select UONOME from MESA_VOTO WHERE MESA_VOTOID = ? ";
+        try (PreparedStatement ps= connection.prepareStatement(query)){
+            ps.setInt(1, idMesa);
+            ResultSet rs= ps.executeQuery();
+            rs.next();
+
+            return rs.getString(1);
+        }
+        catch (SQLException e){
+            System.out.println(e);
+        }
+        return "";
+
+
+    }
+    
+    
+    
+    
+    
     
     
     
@@ -648,7 +710,67 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		                ps.executeUpdate();
 		                connectionToDB.commit();
 		                System.out.println("Fez commit");
-		                return true;
+		                //connectionToDB.close();
+		                
+		                Connection connectionToDB2 = null;
+						connectionToDB2 = connectToDB();
+						String query2="INSERT into BROWSERVOTO VALUES(seq_BrowserVoto.nextval)";
+						try (PreparedStatement ps2= connectionToDB2.prepareStatement(query2)){
+							ps2.executeQuery();
+							connectionToDB.commit();
+							
+							Connection connectionToDB3 = null;
+							connectionToDB3 = connectToDB();
+							String query3="SELECT MAX(Greatest(ID)) from BROWSERVOTO";
+							try (PreparedStatement ps3= connectionToDB3.prepareStatement(query3)){
+								ResultSet rs= ps3.executeQuery();
+								rs.next();
+								int idBrowser=rs.getInt(1);
+								
+								Connection connectionToDB4 = null;
+								connectionToDB4 = connectToDB();
+								String query4 ="SELECT MAX(Greatest(ID)) from ELEICAO";
+								try (PreparedStatement ps4= connectionToDB4.prepareStatement(query4)){
+									ResultSet rs2= ps4.executeQuery();
+									rs2.next();
+									int idEleicao=rs2.getInt(1);
+									
+									
+									Connection connectionToDB5 = null;
+									connectionToDB5 = connectToDB();
+									String query5="INSERT into BROWSERVOTO_ELEICAO VALUES(?,?)";
+									try (PreparedStatement ps5= connectionToDB5.prepareStatement(query5)){
+										System.out.println(idBrowser + " : "+ idEleicao);
+										ps5.setInt(1, idBrowser);
+										ps5.setInt(2, idEleicao);
+										ps5.executeUpdate();
+						                connectionToDB5.commit();
+						                System.out.println("Fez commit 2");
+										return true;
+									}
+									catch (SQLException e) {
+										System.out.println(e);
+										return false;
+									}
+								}
+								catch (SQLException e) {
+									System.out.println(e);
+									return false;
+								}
+								
+							}
+							catch (SQLException e) {
+								System.out.println(e);
+								return false;
+							}
+							
+						}
+						catch (SQLException e) {
+							System.out.println(e);
+							return false;
+						}
+		                
+		                
 
 		            }
 		            catch (SQLException e){
@@ -691,7 +813,64 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		                    ps.setString(6, unidadeorganica);
 		                    ps.executeUpdate();
 		                    connectionToDB.commit();
-		                    return true;
+		                    
+		                    Connection connectionToDB2 = null;
+							connectionToDB2 = connectToDB();
+							String query2="INSERT into BROWSERVOTO VALUES(seq_BrowserVoto.nextval)";
+							try (PreparedStatement ps2= connectionToDB2.prepareStatement(query2)){
+								ps2.executeQuery();
+								connectionToDB.commit();
+								
+								Connection connectionToDB3 = null;
+								connectionToDB3 = connectToDB();
+								String query3="SELECT MAX(Greatest(ID)) from BROWSERVOTO";
+								try (PreparedStatement ps3= connectionToDB3.prepareStatement(query3)){
+									ResultSet rs= ps3.executeQuery();
+									rs.next();
+									int idBrowser=rs.getInt(1);
+									
+									Connection connectionToDB4 = null;
+									connectionToDB4 = connectToDB();
+									String query4 ="SELECT MAX(Greatest(ID)) from ELEICAO";
+									try (PreparedStatement ps4= connectionToDB4.prepareStatement(query4)){
+										ResultSet rs2= ps4.executeQuery();
+										rs2.next();
+										int idEleicao=rs2.getInt(1);
+										
+										
+										Connection connectionToDB5 = null;
+										connectionToDB5 = connectToDB();
+										String query5="INSERT into BROWSERVOTO_ELEICAO VALUES(?,?)";
+										try (PreparedStatement ps5= connectionToDB5.prepareStatement(query5)){
+											System.out.println(idBrowser + " : "+ idEleicao);
+											ps5.setInt(1, idBrowser);
+											ps5.setInt(2, idEleicao);
+											ps5.executeUpdate();
+							                connectionToDB5.commit();
+							                System.out.println("Fez commit 2");
+											return true;
+										}
+										catch (SQLException e) {
+											System.out.println(e);
+											return false;
+										}
+									}
+									catch (SQLException e) {
+										System.out.println(e);
+										return false;
+									}
+									
+								}
+								catch (SQLException e) {
+									System.out.println(e);
+									return false;
+								}
+								
+							}
+							catch (SQLException e) {
+								System.out.println(e);
+								return false;
+							}
 
 		                } catch (SQLException e) {
 		                    System.out.println(e);
@@ -801,7 +980,279 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		 
 	 }
 	 
+	 public boolean manageTables(String operacao, String idEleicao, String idMesa) throws FileNotFoundException, IOException{
+		 if (operacao.equals("0")) {
+			 if (devolveTipoPorIDEleicao(idEleicao).equalsIgnoreCase("Conselho Geral")){
+				 try{
+					 int intIdMesa = Integer.parseInt(idMesa);
+					 int intIdEleicao = Integer.parseInt(idEleicao);
+					 Connection connectionToDB = null;
+					 connectionToDB = connectToDB();
+						
+					 String UOmesa=	devolveUnidadeOrganicaDeMesa(intIdMesa);																																			//String unidadeorganica da mesa//Id da mesa //id da mesa//id da eleicao
+				     String query = "INSERT into MESA_VOTO_ELEICAO" +"VALUES((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = ?) and id = ?), (select id from MESA_VOTO where id = ?), (select id from ELEICAO where id = ?))";
+				     try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+				    	 ps.setString(1, UOmesa);
+				    	 ps.setInt(2, intIdMesa);
+				         ps.setInt(3, intIdMesa);
+				         ps.setInt(4, intIdEleicao);
+				         ps.executeUpdate();
+				         connectionToDB.commit();
+				         return true;
+				        	 
+
+					}
+				     catch (SQLException e){
+				    	 System.out.println(e);
+						 return false;
+				     }
+					 
+				 }
+				 catch(NumberFormatException e){
+					 e.printStackTrace();
+					 return false;
+					 
+				 } 
+				
+			}
+			 else if (devolveTipoPorIDEleicao(idEleicao).equalsIgnoreCase("Nucleo")) {
+				 try{
+					 int intIdMesa = Integer.parseInt(idMesa);
+					 int intIdEleicao = Integer.parseInt(idEleicao);
+					 if (devolveUnidadeOrganicaDeEleicao(intIdEleicao).equalsIgnoreCase(devolveUnidadeOrganicaDeMesa(intIdMesa))) {
+						 Connection connectionToDB = null;
+						 connectionToDB = connectToDB();
+							
+						 String UOmesa=	devolveUnidadeOrganicaDeMesa(intIdMesa);	
+					     String query = "INSERT into MESA_VOTO_ELEICAO" +"VALUES((select UONome from MESA_VOTO where UONome = (select nome from UNIDADEORGANICA where nome = ?) and id = ?), (select id from MESA_VOTO where id = ?), (select id from ELEICAO where id = ?))";
+					     try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+					    	 ps.setString(1, UOmesa);
+					    	 ps.setInt(2, intIdMesa);
+					         ps.setInt(3, intIdMesa);
+					         ps.setInt(4, intIdEleicao);
+					         ps.executeUpdate();
+					         connectionToDB.commit();
+					         return true;
+					        	 
+
+						}
+					     catch (SQLException e){
+					    	 System.out.println(e);
+							 return false;
+					     }
+						 
+						
+					}
+					 else{
+						 System.out.println("Can't associate table. Not the right department");
+						 return false;
+					 }
+					 
+				 }
+				 catch(NumberFormatException e){
+					 e.printStackTrace();
+					 return false;
+					 
+				 }
+				 
+			}
+			else{
+				System.out.println("Should be impossible[there are only 2 types of elections");
+				return false;
+			}
+			 
+			
+		}
+		 else if(operacao.equals("1")){
+			 try{
+				 int intIdMesa = Integer.parseInt(idMesa);
+				 int intIdEleicao = Integer.parseInt(idEleicao);
+				 Connection connectionToDB = null;
+				 connectionToDB = connectToDB();
+					 
+			     String query = "DELETE FROM MESA_VOTO_ELEICAO WHERE MESA_VOTOID = ? AND ELEICAOID = ?";
+			     try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+			    	 ps.setInt(1, intIdMesa);
+			         ps.setInt(2, intIdEleicao);
+			         ps.executeUpdate();
+			         connectionToDB.commit();
+			         return true;
+			        	 
+
+				}
+			     catch (SQLException e){
+			    	 System.out.println(e);
+					 return false;
+			     }
+				 
+			 }
+			 catch(NumberFormatException e){
+				 e.printStackTrace();
+				 return false;
+				 
+			 }
+			 
+		 }
+		 else{
+			 return false;
+		 }
+		 
+	 }
 	 
+	 public String devolveDataInicio(int idEleicao) throws SQLException, FileNotFoundException, IOException{
+		 Connection connectionToDB = null;
+		 connectionToDB = connectToDB();
+		 String query="Select DATAINICIO from ELEICAO where ID = ?";
+		 try(PreparedStatement ps= connectionToDB.prepareStatement(query)){
+			 ps.setInt(1, idEleicao);
+			 ResultSet rs =ps.executeQuery();
+			 rs.next();
+			 String dataI=rs.getString(1);
+			 return dataI;
+			 
+		 }
+		 catch (SQLException e) {
+			 return "";
+			// TODO: handle exception
+		}
+		 
+		 
+	 }
+	 
+	 public String devolveDataFim(int idEleicao) throws SQLException, FileNotFoundException, IOException{
+		 Connection connectionToDB = null;
+		 connectionToDB = connectToDB();
+		 String query="Select DATAIFIM from ELEICAO where ID = ?";
+		 try(PreparedStatement ps= connectionToDB.prepareStatement(query)){
+			 ps.setInt(1, idEleicao);
+			 ResultSet rs =ps.executeQuery();
+			 rs.next();
+			 String dataI=rs.getString(1);
+			 return dataI;
+			 
+		 }
+		 catch (SQLException e) {
+			 return "";
+			// TODO: handle exception
+		}
+		 
+		 
+	 }
+	 
+	 public boolean editElection(String op, String arg1, String arg2, String id) throws FileNotFoundException, SQLException, IOException{
+		 Calendar calSistema = Calendar.getInstance();
+		 int diaSistema = calSistema.get(Calendar.DAY_OF_MONTH);
+	     int mesSistema = calSistema.get(Calendar.MONTH);
+	     int anoSistema = calSistema.get(Calendar.YEAR);
+	     int horaSistema = calSistema.get(Calendar.HOUR_OF_DAY);
+	     int minutoSistema = calSistema.get(Calendar.MINUTE);
+	     calSistema.set(anoSistema, mesSistema, diaSistema, horaSistema, minutoSistema);
+	     int elecId=0;
+	     try{
+	    	 elecId = Integer.parseInt(id);
+	    	 String dataI= devolveDataInicio(elecId);
+	    	 //'YYYY-MM-DD HH24:MI:SS'
+	    	 String [] arrayData= dataI.split(" ");
+	    	 String [] arrayDia = arrayData[0].split("-");
+	    	 String [] arrayHora = arrayData[1].split(":");
+	    	 int dia=Integer.parseInt(arrayDia[2]);
+	    	 int mes=Integer.parseInt(arrayDia[1]);
+	    	 int ano=Integer.parseInt(arrayDia[0]);
+	    	 int hora=Integer.parseInt(arrayHora[0]);
+	    	 int min=Integer.parseInt(arrayHora[1]);
+	    	 Calendar eleicao=Calendar.getInstance();
+	    	 eleicao.set(ano, mes, dia, hora, min);
+	    	 if (!comparaDatas2(calSistema, eleicao)) {
+	    		 return false;
+			}
+	    	 else{
+	    		 if (op.equals("0")) {
+	    			 Connection connectDB = null;
+	    			 connectDB = connectToDB();
+	    			 String query="UPDATE ELEICAO SET TITULO = ?, DESCRICAO = ? WHERE ID = ?";
+	    			 try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+	                     ps.setString(1, arg1);
+	                     ps.setString(2, arg2);
+	                     ps.setInt(3,elecId);
+	                     ps.executeUpdate();
+	                     connectToDB().commit();
+	                     return true;
+	                 }
+	                 catch (SQLException e){
+	                     System.out.println(e);
+	                     return false;
+	                 }
+	    			 
+					 
+					 
+	 				
+	 			}
+	 			 else if(op.equals("1")){
+	 				String [] dataIN = arg1.split("-");
+					String [] dataFN = arg2.split("-");
+	 				 try{
+	 					 int ndi=Integer.parseInt(dataIN[0]);
+	 					 int nmi=Integer.parseInt(dataIN[1]);
+	 					 int nai=Integer.parseInt(dataIN[2]);
+	 					 int nhi=Integer.parseInt(dataIN[3]);
+	 					 int nmmi=Integer.parseInt(dataIN[4]);
+	 					 
+	 					int ndf=Integer.parseInt(dataFN[0]);
+	 					 int nmf=Integer.parseInt(dataFN[1]);
+	 					 int naf=Integer.parseInt(dataFN[2]);
+	 					 int nhf=Integer.parseInt(dataFN[3]);
+	 					 int nmmf=Integer.parseInt(dataFN[4]);
+	 					 
+	 					 Calendar novadataI=Calendar.getInstance();
+	 					 novadataI.set(nai, nmi, ndi, nhi, nmmi);
+	 					 
+	 					 Calendar novadataF= Calendar.getInstance();
+	 					 novadataF.set(naf, nmf, ndf, nhf, nmf);
+	 					 
+	 					 if (!comparaDatas2(novadataI, novadataF)) {
+	 						 return false;
+							
+						}
+	 					 else{
+	 						 String novaDIT=dataIN[3]+"-"+dataIN[2]+"-"+dataIN[0]+" "+dataIN[3]+":"+dataIN[4]+":"+"00";
+	 						String novaDIF=dataFN[3]+"-"+dataFN[2]+"-"+dataFN[0]+" "+dataFN[3]+":"+dataFN[4]+":"+"00";
+	 						Connection connectDB = null;
+	 		    			 connectDB = connectToDB();
+	 		    			 String query="UPDATE ELEICAO SET DATAINICIO = TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS') , DATAFIM = TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS') WHERE ID = ?";
+	 		    			 try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+	 		                     ps.setString(1, novaDIT);
+	 		                     ps.setString(2, novaDIF);
+	 		                     ps.setInt(3,elecId);
+	 		                     ps.executeUpdate();
+	 		                     connectToDB().commit();
+	 		                     return true;
+	 		                 }
+	 		                 catch (SQLException e){
+	 		                     System.out.println(e);
+	 		                     return false;
+	 		                 }
+	 						 
+	 					 }
+	 					 
+	 				 }
+	 				 catch (NumberFormatException e) {
+	 					 return false;
+					}
+	 				 
+	 			 }
+	 			 else{
+	 				 return false;
+	 			 }
+	    		 
+	    	 }
+	     
+			
+	     }
+	     catch (NumberFormatException e) {
+	    	 return false;
+			// TODO: handle exception
+		}
+	 }
 		 
 }
 	

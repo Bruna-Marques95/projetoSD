@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface RMIServerInterface extends Remote {
@@ -20,5 +21,6 @@ public interface RMIServerInterface extends Remote {
 	public boolean manageDepFac(String argumentosOperacaoGeral,String argumentoNome, String argumentoNovoNome, String argumentoNovoNovoNome) throws FileNotFoundException, IOException;
 	public boolean createElection(String typeofelection, String titleofelection, String descriptionofelection, String startdate, String enddate, String organicunit, String associationname)throws FileNotFoundException, IOException;
 	public boolean manageLists(String opcao, String eleicaoID, String nomeLista, String tipoLista) throws FileNotFoundException, IOException;
-	
+	public boolean manageTables(String operacao, String idEleicao, String idMesa)throws FileNotFoundException, IOException;
+	public boolean editElection(String op, String arg1, String arg2, String id) throws FileNotFoundException, SQLException, IOException;
 }

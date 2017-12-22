@@ -23,6 +23,15 @@
 	
 	
 	<a href="managelists.jsp"> >Click here to add/remove lists from an election</a>
+	<br>
+	<br>
+	
+	<a href="managevotingtable.jsp"> >Click here to add/remove tables from an election</a>
+	
+	<br>
+	<br>
+	
+	<a href="editelection.jsp"> >Click here to edit an election</a>
 	
 	
 		
