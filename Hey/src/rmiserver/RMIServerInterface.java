@@ -18,5 +18,7 @@ public interface RMIServerInterface extends Remote {
 	public Connection connectToDB() throws FileNotFoundException, IOException;
 	public int getPermission(String username, String password) throws FileNotFoundException, IOException;
 	public boolean manageDepFac(String argumentosOperacaoGeral,String argumentoNome, String argumentoNovoNome, String argumentoNovoNovoNome) throws FileNotFoundException, IOException;
+	public boolean createElection(String typeofelection, String titleofelection, String descriptionofelection, String startdate, String enddate, String organicunit, String associationname)throws FileNotFoundException, IOException;
+	public boolean manageLists(String opcao, String eleicaoID, String nomeLista, String tipoLista) throws FileNotFoundException, IOException;
 	
 }

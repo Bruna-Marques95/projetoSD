@@ -9,19 +9,20 @@
 </head>
 <body>
 	<h1>iVotas - Administrator Console</h1>
-		<h2>Manage Faculties</h2>
-		<s:form action="managefaculties" method="post">
-		<s:text name="Operation(0-create, 1-remove, 2-edit):" />
-		<s:textfield name="operation" /><br>
-		<s:text name="Type(0-faculty, 1-department):" />
-		<s:textfield name="typeofbuilding" /><br>
-		<s:text name="Name:" />
-		<s:textfield name="nameofbuilding" /><br>
-		<s:text name="NewName:" />
-		<s:textfield name="newnameofbuilding" placeholder=""  /><br>
-		<s:submit />
-	</s:form>
-		
+	
+	<a href="managefacilities.jsp"> >Click here to go to manage faculties and departments</a>
+	
+	<br>
+	<br>
+	
+	<a href="createelection.jsp"> >Click here to go to create election</a>
+	
+	<br>
+	<br>
+	
+	
+	
+	<a href="managelists.jsp"> >Click here to add/remove lists from an election</a>
 	
 	
 		

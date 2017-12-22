@@ -61,9 +61,19 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       	<result name="error">/erroradmin.jsp</result>
     </action>
     
+    <action name="managelists" class= "hey.action.ManageListsAction" method="execute">
+    	<result name="success">/successconsole.jsp</result>
+    	<result name="error">/erroradmin.jsp</result>
+    	</action>
+    
     
     <action name="logout" class="hey.action.LogOutAction" method="execute">
       <result name="success">/index.jsp</result>
+    </action>
+    
+    <action name="createelection" class="hey.action.CreateElectionAction" method="execute">
+    	<result name="sucess">/console.jsp</result>
+    	<result name="error">/console.jsp</result>
     </action>
 
   </package>

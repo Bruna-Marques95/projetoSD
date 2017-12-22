@@ -5,12 +5,15 @@ package hey.model;
 
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+
 import rmiserver.RMIServerInterface;
 
 public class HeyBean {
@@ -19,6 +22,7 @@ public class HeyBean {
 	private String password=null;
 	private String ccnumber=null;
 	private String permission=null; 
+	private Map <Integer, String> elections;
 
 	public HeyBean() {
 		try {
@@ -63,6 +67,26 @@ public class HeyBean {
 			
 	}
 	
+	public boolean getCriarEleicao(String typeofelection, String titleofelection, String descriptionofelection, String startday, String startmonth, String startyear, String starthour, String startminute, String endday, String endmonth, String endyear, String endhour,String endminute, String organicunit, String associationname) throws FileNotFoundException, IOException, SQLException{
+		boolean sucesso;
+		String startdate=startday+"-"+startmonth+"-"+startyear+"-"+starthour+"-"+startminute;
+		String enddate=endday+"-"+endmonth+"-"+endyear+"-"+endhour+"-"+endminute;
+		System.out.println(startdate);
+		System.out.println(enddate);
+		sucesso=server.createElection(typeofelection, titleofelection, descriptionofelection, startdate, enddate, organicunit, associationname);
+		System.out.println(sucesso);
+		return sucesso;
+		
+	}
+	
+	public boolean getGerirListas(String option, String electionid, String listname, String typeoflist) throws FileNotFoundException, IOException{
+		boolean sucesso;
+		sucesso=server.manageLists(option, electionid, listname, typeoflist);
+		return sucesso;
+		
+		
+	}
+	
 	
 	
 	public int getCcnumbers(String username, String password) throws FileNotFoundException, IOException{
@@ -105,6 +129,20 @@ public class HeyBean {
 	 */
 	public void setPermission(String permission) {
 		this.permission = permission;
+	}
+
+	/**
+	 * @return the elections
+	 */
+	public Map <Integer, String> getElections() {
+		return elections;
+	}
+
+	/**
+	 * @param elections the elections to set
+	 */
+	public void setElections(Map <Integer, String> elections) {
+		this.elections = elections;
 	}
 		
 

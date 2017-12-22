@@ -89,6 +89,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return connection;
     }
 	
+	//Auxiliary method to help remove all information about lists from database
+	public int verificaSeExisteChavePessoaLista(String valorParam) throws FileNotFoundException, IOException{      
+		Connection connectionToDB = null;
+		connectionToDB = connectToDB();
+	    String query = "Select count(*) from PESSOA_LISTA WHERE LISTANOMELISTA = ? ";
+	    try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+	    	ps.setString(1, valorParam);
+	        ResultSet rs= ps.executeQuery();
+	        rs.next();
+	        return rs.getInt(1);
+	    }
+	    catch (SQLException e){
+	    	System.out.println(e);
+	        return 0;
+	    }
+
+	 }
+	
+	
+	
+	
+	
 	/**
 	 * returns true if and only if user matches password
 	 * @throws IOException 
@@ -111,6 +133,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             return false;
         }
 	}
+	
+	
+	public void apagaAssociacaoListaAPedido(String valorParam) throws FileNotFoundException, IOException{
+        
+		Connection connectionToDB = null;
+		connectionToDB = connectToDB();
+        String query = "DELETE from PESSOA_LISTA WHERE LISTANOMELISTA = ? ";
+        try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+            ps.setString(1, valorParam);
+            ps.executeUpdate();
+            connectionToDB.commit();
+        }
+        catch (SQLException e){
+            System.out.println(e);
+        }
+
+    }
 	
 	public int getCcnumber(String username, String password) throws FileNotFoundException, IOException{
 		Connection connectionToDB = null;
@@ -218,6 +257,41 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         else return true;
     }
     
+    public static boolean comparaDatas2(Calendar dI, Calendar dF) {
+        System.out.println("DATA dI-> "+dI.get(Calendar.DAY_OF_MONTH) + ":" + (dI.get(Calendar.MONTH)) + ":" + dI.get(Calendar.YEAR) + ":" + dI.get(Calendar.HOUR_OF_DAY) + ":" + dI.get(Calendar.MINUTE));
+        System.out.println("DATA dF-> "+dF.get(Calendar.DAY_OF_MONTH) + ":" + (dF.get(Calendar.MONTH)) + ":" + dF.get(Calendar.YEAR) + ":" + dF.get(Calendar.HOUR_OF_DAY) + ":" + dF.get(Calendar.MINUTE));
+        if(dI.get(Calendar.YEAR) >= dF.get(Calendar.YEAR)){
+            if(dI.get(Calendar.YEAR) == dF.get(Calendar.YEAR)){
+                if(dI.get(Calendar.MONTH) >= dF.get(Calendar.MONTH)){
+                    if(dI.get(Calendar.MONTH) == dF.get(Calendar.MONTH)){
+                        if(dI.get(Calendar.DAY_OF_MONTH) >= dF.get(Calendar.DAY_OF_MONTH)){
+                            if(dI.get(Calendar.DAY_OF_MONTH) == dF.get(Calendar.DAY_OF_MONTH)){
+                                if (dI.get(Calendar.HOUR_OF_DAY) >= dF.get(Calendar.HOUR_OF_DAY)){
+                                    if (dI.get(Calendar.HOUR_OF_DAY) == dF.get(Calendar.HOUR_OF_DAY)){
+                                        return (dI.get(Calendar.MINUTE) < dF.get(Calendar.MINUTE));
+                                    }
+                                    else return false;
+                                }
+                                else return true;
+                            }
+                            else return false;
+                        }
+                        else return true;
+                    }
+                    else return false;
+                }
+                else return true;
+            }
+            else return false;
+        }
+        else return true;
+
+    }
+    
+    
+    
+    
+    
     public static boolean verificaFuncao(String funcao){
         if (funcao.equalsIgnoreCase("aluno") || funcao.equalsIgnoreCase("professor") || funcao.equalsIgnoreCase("funcionario")){
             return true;
@@ -227,6 +301,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
     }
     
+    
     public static boolean verificaPermissao(String permissao){
         if (permissao.equalsIgnoreCase("0") || permissao.equalsIgnoreCase("1")){
             return true;
@@ -235,6 +310,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             return false;
         }
     }
+    
+    public String devolveTipoPorIDEleicao(String iD) throws FileNotFoundException, IOException{
+    	Connection connectionToDB = null;
+		connectionToDB = connectToDB();
+       
+        String query = "Select TIPO from ELEICAO WHERE ID = ? ";
+        try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+            ps.setInt(1, Integer.parseInt(iD));
+            ResultSet rs= ps.executeQuery();
+            rs.next();
+
+            return rs.getString(1);
+        }
+        catch (SQLException e){
+            System.out.println(e);
+        }
+        return "";
+
+    }
+    
+    
+    
 	
 	public boolean registerPerson(String nomePessoa, String nomeUtilizador, String password, String numeroTelefone, String morada, String dataValidadeDoCC, String numeroCC, String unidadeOrganica,String funcaoPessoa, String permissao) throws FileNotFoundException, IOException{
 		System.out.println(nomePessoa + " : " + nomeUtilizador + " : " + password + " : " + numeroTelefone + " : " + morada + " : " + dataValidadeDoCC + " : " + numeroCC + " : " + unidadeOrganica + " : " + funcaoPessoa + " : " + permissao);
@@ -259,7 +356,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		mes= Integer.parseInt(arrayDateComponents[1]);
 		ano= Integer.parseInt(arrayDateComponents[2]);
 		Calendar cal = Calendar.getInstance();
-		cal.set(ano, mes, dia);
+		cal.set(ano, mes-1, dia);
 		
 		Calendar calSistema = Calendar.getInstance();
 		int diaSistema = calSistema.get(Calendar.DAY_OF_MONTH);
@@ -482,7 +579,229 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 		}
 		 return true;
 	 }
-		 
 	 
+	 
+	 public boolean createElection(String tipoEleicao, String tituloEleicao, String descricaoEleicao, String dataInicio, String dataFim, String unidadeorganica, String associacaoEstudantes) throws FileNotFoundException, IOException{
+		 System.out.println(tipoEleicao +" : "+ " : "+tituloEleicao+" : "+descricaoEleicao+" : "+dataInicio+" : "+dataFim+" : "+unidadeorganica);
+		 String [] arrayDateComponents = dataInicio.split("-");
+		 System.out.println(arrayDateComponents);
+		 
+		 
+		 Calendar calSistema = Calendar.getInstance();
+		 int diaSistema = calSistema.get(Calendar.DAY_OF_MONTH);
+	     int mesSistema = calSistema.get(Calendar.MONTH);
+	     int anoSistema = calSistema.get(Calendar.YEAR);
+	     int horaSistema = calSistema.get(Calendar.HOUR_OF_DAY);
+	     int minutoSistema = calSistema.get(Calendar.MINUTE);
+	     calSistema.set(anoSistema, mesSistema, diaSistema, horaSistema, minutoSistema);
+		 
+		 
+		 
+		 int diaInicio= Integer.parseInt(arrayDateComponents[0]);
+		 int mesInicio= Integer.parseInt(arrayDateComponents[1]);
+		 int anoInicio= Integer.parseInt(arrayDateComponents[2]);
+		 int horaInicio=Integer.parseInt(arrayDateComponents[3]);
+		 int minutoInicio=Integer.parseInt(arrayDateComponents[4]);
+		 
+		 
+		 Calendar calInicio = Calendar.getInstance();
+		 calInicio.set(anoInicio, mesInicio-1, diaInicio, horaInicio, minutoInicio);
+			
+	     
+	     String [] arrayDateComponents2 = dataFim.split("-");
+		 System.out.println(arrayDateComponents2);
+		 int diaFim= Integer.parseInt(arrayDateComponents2[0]);
+		 int mesFim= Integer.parseInt(arrayDateComponents2[1]);
+		 int anoFim= Integer.parseInt(arrayDateComponents2[2]);
+		 int horaFim=Integer.parseInt(arrayDateComponents2[3]);
+		 int minutoFim=Integer.parseInt(arrayDateComponents2[4]);
+		 
+		 Calendar calFim = Calendar.getInstance();
+		 calFim.set(anoFim, mesFim-1, diaFim, horaFim, minutoFim);
+		 
+		 
+	     
+	     
+		 String dataInicioFormatoQuery=arrayDateComponents[2]+"-"+arrayDateComponents[1]+"-"+arrayDateComponents[0]+" "+arrayDateComponents[3]+":"+arrayDateComponents[4]+":"+"00";
+		 String dataFimFormatoQuery=arrayDateComponents2[2]+"-"+arrayDateComponents2[1]+"-"+arrayDateComponents2[0]+" "+arrayDateComponents2[3]+":"+arrayDateComponents2[4]+":"+"00";
+		 
+		 System.out.println(dataInicioFormatoQuery);
+		 System.out.println(dataFimFormatoQuery);
+		 
+		 
+		 if (!comparaDatas2(calSistema, calInicio) || !comparaDatas2(calInicio, calFim)) {
+			 return false;
+			 
+		}
+		 else{
+			 if (tipoEleicao.equalsIgnoreCase("Conselho Geral")) {
+				 Connection connectionToDB = null;
+				 connectionToDB = connectToDB();
+				 String query ="INSERT into ELEICAO"
+				 +" Values(?,?,TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS'),0, 0, 0, ?, seq_Eleicao.nextval, (select nome from UNIDADEORGANICA where nome = 'UC'))";
+				 try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+		                ps.setString(1, tituloEleicao);
+		                ps.setString(2, descricaoEleicao);
+		                ps.setString(3, dataInicioFormatoQuery);
+		                ps.setString(4, dataFimFormatoQuery);
+		                ps.setString(5, tipoEleicao);
+		                ps.executeUpdate();
+		                connectionToDB.commit();
+		                System.out.println("Fez commit");
+		                return true;
+
+		            }
+		            catch (SQLException e){
+		                System.out.println(e);
+		                return false;
+		            }
+			 }
+			 else if (tipoEleicao.equalsIgnoreCase("Nucleo")) {
+				 boolean encontrado=false;
+				 Connection connectionToDB = null;
+				 connectionToDB = connectToDB();
+				 String searchQuery="SELECT COUNT(*) as CONTAGEM from NUCLEOESTUDANTES where NOMENUCLEO = ?"; 
+				 try(PreparedStatement psQueryCount = connectionToDB.prepareStatement(searchQuery)){
+					 psQueryCount.setString(1, associacaoEstudantes);
+					 ResultSet rs = psQueryCount.executeQuery();
+					 rs.next();
+					 if (rs.getInt("CONTAGEM")==1) {
+						 encontrado=true;
+					}
+					 else{
+						 return false;
+					 }
+					 
+					 
+				 }
+				 catch(SQLException e){
+					 return false; 
+				 }
+				 
+				 if (encontrado==true) {
+					 //connectionToDB = connectToDB();//Not necessary
+					 String query = "INSERT into ELEICAO"
+		                        + " Values(?,?,TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS'), TO_TIMESTAMP(?,'YYYY-MM-DD HH24:MI:SS'),0, 0, 0, ?, seq_Eleicao.nextval, (select nome from UNIDADEORGANICA where nome=NLS_UPPER(?)))";
+		                try (PreparedStatement ps = connectionToDB.prepareStatement(query)) {
+		                    ps.setString(1, tituloEleicao);
+		                    ps.setString(2, descricaoEleicao);
+		                    ps.setString(3, dataInicioFormatoQuery);
+		                    ps.setString(4, dataFimFormatoQuery);
+		                    ps.setString(5, tipoEleicao);
+		                    ps.setString(6, unidadeorganica);
+		                    ps.executeUpdate();
+		                    connectionToDB.commit();
+		                    return true;
+
+		                } catch (SQLException e) {
+		                    System.out.println(e);
+		                    return false;
+		                }
+				 }else{
+					 return false;
+					 
+				}
+				
+			 }
+			 else{
+				return false;
+			 }
+		 }	 
+		 
+	}
+	 public boolean manageLists(String opcao, String eleicaoID, String nomeLista, String tipoLista) throws FileNotFoundException, IOException{
+		 if (opcao.equals("0")) {
+			 if (devolveTipoPorIDEleicao(eleicaoID).equalsIgnoreCase("Conselho Geral")) {
+				 if (verificaFuncao(tipoLista)) {
+					 Connection connectionToDB = null;
+					 connectionToDB = connectToDB();
+					 String query ="INSERT into LISTA"
+						+" Values(0,INITCAP(?),?,INITCAP(?))";
+						try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+				            ps.setString(1, nomeLista);
+			                ps.setInt(2, Integer.parseInt(eleicaoID));
+					        ps.setString(3, tipoLista);
+					        ps.executeUpdate();
+					        connectionToDB.commit();
+					        System.out.println("Fez commit");
+					        return true;
+
+					     }
+					     catch (SQLException e){
+					    	 System.out.println(e);
+					         return false;
+					     }
+					
+				}
+				 else{
+					 return false;
+				 }
+				
+			}
+			 else if (devolveTipoPorIDEleicao(eleicaoID).equalsIgnoreCase("Nucleo")) {
+				 if (tipoLista.equalsIgnoreCase("Aluno")) {
+					 Connection connectionToDB = null;
+					 connectionToDB = connectToDB();
+					 String query ="INSERT into LISTA"
+						+" Values(0,INITCAP(?),?,INITCAP(?))";
+						try (PreparedStatement ps= connectionToDB.prepareStatement(query)){
+				            ps.setString(1, nomeLista);
+			                ps.setInt(2, Integer.parseInt(eleicaoID));
+					        ps.setString(3, tipoLista);
+					        ps.executeUpdate();
+					        connectionToDB.commit();
+					        System.out.println("Fez commit");
+					        return true;
+
+					     }
+					     catch (SQLException e){
+					    	 System.out.println(e);
+					         return false;
+					     }
+					
+				}
+				 else{
+					 return false;
+				 }
+				
+			}
+			 else{
+				 return false;
+			 }
+			 
+			
+		 	}
+		 //Deletes the references from the deleted list from the database
+		 	else if (opcao.equals("1")) {
+		 		Connection connectionToDB = null;
+				connectionToDB = connectToDB();
+				 
+		         String query = "DELETE FROM LISTA WHERE NOMELISTA=?";
+		         try (PreparedStatement ps= connectToDB().prepareStatement(query)){
+		        	 ps.setString(1, nomeLista);
+		                if (verificaSeExisteChavePessoaLista(nomeLista)>=1){
+		                    apagaAssociacaoListaAPedido(nomeLista);
+
+		                }
+		                ps.executeUpdate();
+		                connectionToDB.commit();
+		                return true;
+		        	 
+
+				 }
+				 catch (SQLException e){
+				    System.out.println(e);
+				    return false;
+				 }
+		
+		}
+		else{
+			return false;	
+		}
+		 
+	 }
+	 
+	 
+		 
 }
 	
